@@ -1,0 +1,1 @@
+<resources><style name='Theme.Kutumas' parent='Theme.MaterialComponents.DayNight.DarkActionBar'><item name='colorPrimary'>#7bb241</item><item name='colorOnPrimary'>#ffffff</item></style><style name='Theme.Splash' parent='Theme.Kutumas'><item name='android:windowBackground'>@color/splash_bg</item></style></resources>
