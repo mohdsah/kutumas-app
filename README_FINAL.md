@@ -1,18 +1,13 @@
-KUTUMAS WebView APK (built assets)
+KUTUMAS WebView Final Fixed (v1.2)
 
-Features included:
-- Splash screen with KUTUMAS text
-- Offline page (assets/offline.html) shown when no internet
-- Exit confirmation popup when back pressed
-- Auto-update check: app requests http://modalcircle.sytes.net/app_version.json and expects JSON like {"version": 2, "url": "http://modalcircle.sytes.net/kutumas.apk"}
-  - If version in JSON is greater than app CURRENT_VERSION (1), a prompt appears to download new APK.
-  - Host your APK at http://modalcircle.sytes.net/kutumas.apk (upload the signed APK to your server)
+Features:
+- Splash screen, offline page, exit confirm dialog, auto-update prompt
+- Auto-reload when network becomes available
+- AdMob test banner integrated (App ID: ca-app-pub-3940256099942544~3347511713, Banner ID: ca-app-pub-3940256099942544/6300978111)
+- GitHub Actions workflow included for auto-build signed APK
 
-How to build signed APK using GitHub Actions:
-- Use the auto-build ZIP workflow previously provided (or build locally with Android Studio).
-- After building, upload the resulting APK to http://modalcircle.sytes.net/kutumas.apk to enable in-app update prompt.
-
-Notes:
-- The app cannot auto-install the downloaded APK silently; users must allow install from unknown sources and install manually after download. The app will open the APK link in browser to initiate download.
-- If you want full auto-update + silent install, you'd need system-level permissions (not available to regular apps).
-
+Build & deploy:
+1. Upload this project to GitHub (push all files).
+2. Add your keystore as GitHub secret KEYSTORE_BASE64, and add secrets KEYSTORE_PASS, KEY_ALIAS, KEY_PASS.
+3. In Actions tab, run the workflow 'Build KUTUMAS APK' to generate signed APK.
+4. Download APK from Actions artifacts and upload to your hosting at http://modalcircle.sytes.net/kutumas.apk to enable in-app update checks.

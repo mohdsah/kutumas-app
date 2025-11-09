@@ -2,7 +2,11 @@ package com.kutumas.webview
 
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
@@ -11,6 +15,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -19,6 +26,7 @@ import java.net.URL
 
 class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
+    private var adView: AdView? = null
     private val START_URL = "http://modalcircle.sytes.net"
     private val VERSION_URL = "http://modalcircle.sytes.net/app_version.json"
     private val APK_URL = "http://modalcircle.sytes.net/kutumas.apk"
@@ -32,13 +40,24 @@ class MainActivity : AppCompatActivity() {
         webView.settings.domStorageEnabled = true
         webView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-                // load local offline page
                 view?.loadUrl("file:///android_asset/offline.html")
             }
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean { return false }
         }
+        // init admob
+        MobileAds.initialize(this) {}
+        adView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView?.loadAd(adRequest)
+
+        // register network callback for auto reload
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val nr = NetworkRequest.Builder().build()
+        cm.registerNetworkCallback(nr, object: ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) { runOnUiThread { try { if(!webView.url?.startsWith("file://")!!) webView.reload() } catch(e:Exception){} } }
+        })
+
         webView.loadUrl(START_URL)
-        // check version async
         CheckVersionTask().execute(VERSION_URL)
     }
 
@@ -73,7 +92,6 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: Int?) {
             if(result != null && result > 0 && result > CURRENT_VERSION) {
-                // show update dialog
                 AlertDialog.Builder(this@MainActivity)
                   .setTitle("Kemas kini tersedia")
                   .setMessage("Versi aplikasi terbaru tersedia. Muat turun & pasang sekarang?")
